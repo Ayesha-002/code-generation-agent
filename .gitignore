@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.env
+
+# HuggingFace cache
+.cache/
+.huggingface/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Accidental version folders
+0.19
+4.36
+4.36.2

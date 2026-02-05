@@ -1,0 +1,6 @@
+transformers>=4.36.2
+tokenizers>=0.15.2
+torch>=2.0.0
+accelerate
+requests
+python-dotenv
