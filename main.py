@@ -1,32 +1,33 @@
 from agent_code_writer.code_writer import CodeWriterAgent
-from agent_code_writer.code_tester import CodeTesterAgent
-from agent_code_writer.code_reviewer import CodeReviewerAgent
-from agent_code_writer.code_improver import CodeImproverAgent
+from core.executor import ExecutorAgent
+from core.verifier_agent import VerifierAgent
 
-writer = CodeWriterAgent()
-tester = CodeTesterAgent()
-reviewer = CodeReviewerAgent()
-improver = CodeImproverAgent(writer)
+MAX_ATTEMPTS = 3
 
-task = """
-Write a Python function that divides two numbers.
-Call it with a = 10 and b = 0.
-"""
+if __name__ == "__main__":
+    writer = CodeWriterAgent()
+    executor = ExecutorAgent()
+    verifier = VerifierAgent()
 
-code = writer.write_code(task)
+    task = "Write a Python function that checks if a number is prime."
 
-for i in range(3):
-    print(f"\n=== ITERATION {i+1} ===")
-    print(code)
+    code = writer.write_code(task)
 
-    result = tester.run(code)
+    for attempt in range(MAX_ATTEMPTS):
+        print(f"\n=== ATTEMPT {attempt + 1} ===\n")
+        print(code)
 
-    if result["success"]:
-        print("✅ Success")
-        print(result["stdout"])
-        break
+        verification = verifier.verify(code)
+        print("\nVerification:", verification)
 
-    feedback = reviewer.review(result)
-    print("❌ Feedback:", feedback)
-
-    code = improver.improve(code, feedback)
+        if verification["valid"]:
+            print("\n✅ Code approved")
+            result = executor.run(code)
+            print("\n=== EXECUTION RESULT ===")
+            print(result)
+            break
+        else:
+            print("\n🔁 Repairing code...")
+            code = writer._strip_non_code(code)
+    else:
+        print("\n❌ Failed to generate valid code after retries")
